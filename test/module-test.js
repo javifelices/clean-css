@@ -9,7 +9,7 @@ vows.describe('module tests').addBatch({
       return css.minify.bind(css);
     },
     'should minify CSS correctly': function(minify) {
-      assert.equal(minify('a{  color: #f00;  }'), 'a{color:red}');
+      assert.equal(minify('a{  color: #f00;  }').styles, 'a{color:red}');
     }
   },
   'extended via prototype': {
@@ -20,7 +20,7 @@ vows.describe('module tests').addBatch({
       new CleanCSS().foo('a{  color: #f00;  }', this.callback);
     },
     'should minify CSS correctly': function(error, minified) {
-      assert.equal(minified, 'a{color:red}');
+      assert.equal(minified.styles, 'a{color:red}');
     },
     teardown: function() {
       delete CleanCSS.prototype.foo;
@@ -38,7 +38,7 @@ vows.describe('module tests').addBatch({
       assert.equal(errors, null);
     },
     'should yield minified data': function(errors, minified) {
-      assert.equal(minified, 'a{color:red}');
+      assert.equal(minified.styles, 'a{color:red}');
     }
   },
   'with callback passed and one error': {
@@ -110,7 +110,7 @@ vows.describe('module tests').addBatch({
       this.callback(null, minified, minifier);
     },
     'should minify correctly': function(error, minified) {
-      assert.equal(minified, 'a{display:block}');
+      assert.equal(minified.styles, 'a{display:block}');
     },
     'should raise no errors': function(error, minified, minifier) {
       assert.equal(minifier.errors.length, 0);
@@ -127,7 +127,7 @@ vows.describe('module tests').addBatch({
       this.callback(null, minified, minifier);
     },
     'should minify correctly': function(error, minified) {
-      assert.equal(minified, 'a{display:block}p{color:red}');
+      assert.equal(minified.styles, 'a{display:block}p{color:red}');
     },
     'should raise no errors': function(error, minified, minifier) {
       assert.equal(minifier.errors.length, 0);
@@ -144,7 +144,7 @@ vows.describe('module tests').addBatch({
       this.callback(null, minified, minifier);
     },
     'should minify correctly': function(error, minified) {
-      assert.equal(minified, '');
+      assert.equal(minified.styles, '');
     },
     'should raise no errors': function(error, minified, minifier) {
       assert.equal(minifier.errors.length, 0);
@@ -233,7 +233,7 @@ vows.describe('module tests').addBatch({
       return new CleanCSS().minify(new Buffer('@import url(test/data/partials/one.css);'));
     },
     'should be processed correctly': function(minified) {
-      assert.equal('.one{color:red}', minified);
+      assert.equal('.one{color:red}', minified.styles);
     }
   }
 }).export(module);
