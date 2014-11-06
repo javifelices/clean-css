@@ -1,6 +1,7 @@
 var vows = require('vows');
 var assert = require('assert');
 var CleanCSS = require('../index');
+var SourceMapGenerator = require('source-map').SourceMapGenerator;
 
 vows.describe('module tests').addBatch({
   'imported as a function': {
@@ -161,7 +162,7 @@ vows.describe('module tests').addBatch({
       this.callback(null, minified, minifier);
     },
     'should output correct content': function(error, minified) {
-      assert.equal(minified, 'a{background:url(image/}');
+      assert.equal(minified.styles, 'a{background:url(image/}');
     },
     'should raise no errors': function(error, minified, minifier) {
       assert.equal(minifier.errors.length, 0);
@@ -178,7 +179,7 @@ vows.describe('module tests').addBatch({
       this.callback(null, minified, minifier);
     },
     'should output correct content': function(error, minified) {
-      assert.equal(minified, '');
+      assert.equal(minified.styles, '');
     },
     'should raise no errors': function(error, minified, minifier) {
       assert.equal(minifier.errors.length, 0);
@@ -195,7 +196,7 @@ vows.describe('module tests').addBatch({
       this.callback(null, minified, minifier);
     },
     'should output correct content': function(error, minified) {
-      assert.equal(minified, '');
+      assert.equal(minified.styles, '');
     },
     'should raise no errors': function(error, minified, minifier) {
       assert.equal(minifier.errors.length, 0);
@@ -234,6 +235,15 @@ vows.describe('module tests').addBatch({
     },
     'should be processed correctly': function(minified) {
       assert.equal('.one{color:red}', minified.styles);
+    }
+  },
+  'source map': {
+    'topic': new CleanCSS({ sourceMap: true }).minify('/*! a */div[data-id=" abc "] { color:red; }'),
+    'should minify correctly': function (minified) {
+      assert.equal('/*! a */div[data-id=" abc "]{color:red}', minified.styles);
+    },
+    'should include source map': function (minified) {
+      assert.instanceOf(minified.sourceMap, SourceMapGenerator);
     }
   }
 }).export(module);
